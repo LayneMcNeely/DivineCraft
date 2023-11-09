@@ -6,6 +6,21 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
+    path: Assets/Scenes/MainMenu.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/StrongholdOverworld.unity
+    guid: 8b27df67a1a4ee849a6ec92ebc9c0d0b
+  - enabled: 1
+    path: Assets/Scenes/VillageOverworld.unity
+    guid: 95a8a4cc05006234985c030e844bc675
+  - enabled: 1
+    path: Assets/Scenes/OutskirtsOverworld.unity
+    guid: 7cddc98c633bf3b42af1b025f155f4a3
+  - enabled: 1
+    path: Assets/Scenes/DarkwoodsOverworld.unity
+    guid: 41dcb3cc5fd56d943af334ad89580b48
+  - enabled: 1
+    path: Assets/Scenes/ShrineOverworld.unity
+    guid: 7ed5a8c856d6a324b84cca3bb8bc40d1
   m_configObjects: {}
