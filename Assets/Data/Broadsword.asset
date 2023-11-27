@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e1f869d79f9b15448e46743510304f0, type: 3}
+  m_Name: Broadsword
+  m_EditorClassIdentifier: 
+  <IsStackable>k__BackingField: 1
+  <MaxStackSize>k__BackingField: 1
+  <Name>k__BackingField: Broadsword
+  <Description>k__BackingField: The Knight's trusty sword.
+  <ItemImage>k__BackingField: {fileID: -277917796, guid: 03a9b0f05dc52fe40bdd18ae3dacbeac, type: 3}
+  <DefaultParametersList>k__BackingField:
+  - itemParameter: {fileID: 11400000, guid: d7db9fc19b3a891459f5c6b61c95d7dc, type: 2}
+    value: 60
+  <MinDamage>k__BackingField: 5
+  <MaxDamage>k__BackingField: 15
+  <Accuracy>k__BackingField: 75
+  <energyCost>k__BackingField: 15
+  <MaxDurability>k__BackingField: 60
+  <CurrentDurability>k__BackingField: 60

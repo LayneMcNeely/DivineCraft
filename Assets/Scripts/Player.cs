@@ -27,6 +27,9 @@ public class Player : MonoBehaviour
     Rigidbody2D rb;
     SpriteRenderer spriteRenderer;
     public Animator animator;
+
+    public HUD playerHUD;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,6 +40,9 @@ public class Player : MonoBehaviour
         }
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+
+        currentHP = PlayerPrefs.GetFloat("playerHealth");
+        playerHUD.SetPlayerHUD(this);
     }
 
     // Update is called once per frame

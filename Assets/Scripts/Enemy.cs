@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
     public float currentHP;
     public string mainATK;
     public List<int> moves = new List<int>();
+    public List<GameObject> loot = new List<GameObject>();
 
     public bool TakeDamage(float dmg)
     {

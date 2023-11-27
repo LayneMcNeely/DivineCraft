@@ -53,6 +53,13 @@ MonoBehaviour:
   currentHP: 90
   mainATK: Justice
   moves: 010000000100000001000000010000000700000007000000
+  loot:
+  - {fileID: 2974613340785437260, guid: 9219be0df059c6648a166f2e1aacb9eb, type: 3}
+  - {fileID: 6381993655764688831, guid: 1b3c7d41f9664b34591087c678e42a17, type: 3}
+  - {fileID: 3814368456949724973, guid: 98fedbbdb43f8274ba0eeef2256f3356, type: 3}
+  - {fileID: 6902971100304188804, guid: 966fc511b3a51c64ca998adb326390ce, type: 3}
+  - {fileID: 4815332916640329890, guid: c9f7d6b2d018f2c4db8840203486b2f7, type: 3}
+  - {fileID: 8732016251278569317, guid: 286874d88da4b93459bd12d1131fce87, type: 3}
 --- !u!212 &860358440981054223
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -10,6 +10,20 @@ public class ButtonsFunctions : MonoBehaviour
         SceneManager.LoadScene(levelName);
     }
 
+    public void NewGame()
+    {
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.SetFloat("playerHealth", 100);
+        PlayerPrefs.SetString("currentLevel", "StrongholdOverworld");
+        PlayerPrefs.Save();
+        SceneManager.LoadScene("StrongholdOverworld");
+    }
+
+    public void Continue()
+    {
+        SceneManager.LoadScene(PlayerPrefs.GetString("currentLevel"));
+    }
+
     public void Exit()
     {
 #if UNITY_EDITOR

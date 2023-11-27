@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31598370c2f564c4a9c63748617fa686, type: 3}
+  m_Name: HealthPotion
+  m_EditorClassIdentifier: 
+  <IsStackable>k__BackingField: 1
+  <MaxStackSize>k__BackingField: 1
+  <Name>k__BackingField: Health Potion
+  <Description>k__BackingField: Restores 15 HP
+  <ItemImage>k__BackingField: {fileID: -789317672, guid: ec68338b6b4b61943b6035169d34eb06, type: 3}
+  <DefaultParametersList>k__BackingField: []
+  modifierData:
+  - statModifier: {fileID: 11400000, guid: 8da7b41f3f115a04dbbd7f15d2bf8d6c, type: 2}
+    value: 15

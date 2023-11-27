@@ -11,7 +11,7 @@ public class BattleSystem : MonoBehaviour
 {
     public BattleState state;
 
-    [Header("Prefabs")]
+    [Header("Character Prefabs")]
     public GameObject playerPrefab;
     public SpriteRenderer playerSprite;
     public SpriteRenderer enemySprite;
@@ -27,7 +27,26 @@ public class BattleSystem : MonoBehaviour
     public Sprite blueIntent;
     public Sprite nothingIntent;
 
+    [Header("Loot Drops")]
+    public GameObject wood;
+    public GameObject stone;
+    public GameObject scrap;
+    public GameObject firethorn;
+    public GameObject mageflower;
+    public GameObject sickleaf;
+
+    [Header("Audio Sources")]
+    public AudioSource playerHitAudio;
+    public AudioSource enemyHitAudio;
+    public AudioSource pummelHitAudio;
+    public AudioSource armorHitAudio;
+    public AudioSource braceAudio;
+    public AudioSource itemThrowAudio;
+    public AudioSource itemThrowArmorAudio;
+    public AudioSource missAudio;
+    public AudioSource errorAudio;
     
+
     private int enemySpaceIndex = 0;
     private int enemyAction;
     private int enemyCooldown;
@@ -37,7 +56,7 @@ public class BattleSystem : MonoBehaviour
     private bool playerWeakend;
     private bool retaliate;
     private bool drained;
-    //private bool plated;
+    private bool plated;
     private bool exposed;
     private float playerPoison;
     private float enemyArmor;
@@ -51,6 +70,7 @@ public class BattleSystem : MonoBehaviour
 
     Enemy enemyUnit;
     Player playerUnit;
+    AgentWeapon agentWeapon;
 
     [Header("HUDs")]
     public HUD playerHUD;
@@ -87,7 +107,7 @@ public class BattleSystem : MonoBehaviour
         exposed = false;
         retaliate = false;
         drained = false;
-        //plated = false;
+        plated = false;
         playerPoison = 0;
         enemyArmor = 0;
 
@@ -95,6 +115,7 @@ public class BattleSystem : MonoBehaviour
 
         playerUnit = playerPrefab.GetComponent<Player>();
         playerSprite = playerPrefab.GetComponent<SpriteRenderer>();
+        agentWeapon = playerPrefab.GetComponent<AgentWeapon>();
         playerUnit.currentEnergy = 100;
         playerHUD.SetNRG(100);
         playerHUD.SetPlayerHUD(playerUnit);
@@ -131,46 +152,47 @@ public class BattleSystem : MonoBehaviour
         if (enemyArmor > 0)
         {
             enemyArmor = Mathf.Round(enemyArmor - playerATK);
+            armorHitAudio.Play();
         }
         else
         {
             isDead = enemyUnit.TakeDamage(playerATK);//damage the enemy
+            playerHitAudio.Play();
         }
 
-        //if (armorValue <= 0 && plated === true)
-        //{
-        //    plated = false;
-        //    lootDrop("scrap");
-        //    lootDrop("scrap");
-        //    populateBag(inventory);
-        //}
+        if (enemyArmor <= 0 && plated == true)
+        {
+            plated = false;
+            LootDrop("scrap", 2);
+        }
         if (enemyArmor < 0)
         {
             enemyUnit.currentHP += enemyArmor;
             enemyArmor = 0;
+            isDead = enemyUnit.TakeDamage(-enemyArmor);//damage the enemy
         }
         enemyArmorText.text = "Enemy Armor: " + enemyArmor.ToString();
-
-        //isDead = enemyUnit.TakeDamage(playerATK);//damage the enemy
 
         playerUnit.currentEnergy -= playerUnit.energyDR;//player loses energy
 
         playerUnit.currentDurability--;
+        //modify SO durability in inventory
+        agentWeapon.ModifyDurability();
 
         playerHUD.SetNRG(playerUnit.currentEnergy);//update player hud
         playerHUD.SetDurability(playerUnit.currentDurability);
         playerHUD.SetPlayerHUD(playerUnit);
 
         enemyHUD.SetHP(enemyUnit.currentHP);//update enemy hud
-        dialogueText.text = "Knight uses Broadsword for "+ playerATK +" damage.";
+        dialogueText.text = "Knight uses "+ agentWeapon.weapon.Name +" for "+ playerATK +" damage.";
         playerUnit.animator.SetTrigger("Attack1");//play animation for attacking
+        
 
         yield return new WaitForSeconds(1);
         if (isDead)//check if enemy died
         {
             if(state == BattleState.END)
             {
-                Debug.Log("stop");
                 yield break; 
             }
             enemySprite.enabled = false;
@@ -246,7 +268,7 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    void IsAttacking(int action)
+    void IsAttacking(int action)//keeps track of if the enemy has attacked. if anemy has not attacked in the last the turn, force attack.
     {
         switch(action)
         {
@@ -276,13 +298,16 @@ public class BattleSystem : MonoBehaviour
         {
             case 1://basic attack
                 enemyATKcalc();
+                enemyHitAudio.Play();
                 dialogueText.text = enemyUnit.enemyName + " uses " + enemyUnit.mainATK + " for " + enemyATK + " damage.";
                 break;
             case 2://pummel
                 enemyATKcalc();
+                pummelHitAudio.Play();
                 dialogueText.text = enemyUnit.enemyName + " uses Pummel " + enemyUnit.mainATK + " for " + enemyATK + " damage.";
                 break;
             case 3://armor
+                braceAudio.Play();
                 enemyArmor += 20;
                 enemyArmorText.text = "Enemy Armor: "+ enemyArmor.ToString();
                 dialogueText.text = enemyUnit.enemyName + " gains armor.";
@@ -296,8 +321,9 @@ public class BattleSystem : MonoBehaviour
                 dialogueText.text = enemyUnit.enemyName + " is retaliating.";
                 break;
             case 6://plated armor
+                braceAudio.Play();
                 enemyArmor += 40;
-                //plated = true;
+                plated = true;
                 enemyArmorText.text = "Enemy Armor: " + enemyArmor.ToString();
                 dialogueText.text = enemyUnit.enemyName + " gains plated armor.";
                 break;
@@ -313,6 +339,7 @@ public class BattleSystem : MonoBehaviour
                 if (exposed == true)
                 {
                     enemyATKcalc();
+                    enemyHitAudio.Play();
                     dialogueText.text = enemyUnit.enemyName + " uses Super " + enemyUnit.mainATK + " for " + enemyATK + " damage.";
                 }
                 else
@@ -388,15 +415,54 @@ public class BattleSystem : MonoBehaviour
             PlayerTurn();
         }
     }
+
+    private void LootDrop(string loot, int amount)
+    {
+        for(int i = 0; i < amount; i++)
+        {
+            switch (loot)
+            {
+                case "wood":
+                    Instantiate(wood, new Vector3(enemyUnit.transform.position.x + i, enemyUnit.transform.position.y, enemyUnit.transform.position.z), Quaternion.identity);
+                    break;
+                case "stone":
+                    Instantiate(stone, new Vector3(enemyUnit.transform.position.x + i, enemyUnit.transform.position.y, enemyUnit.transform.position.z), Quaternion.identity);
+                    break;
+                case "scrap":
+                    Instantiate(scrap, new Vector3(enemyUnit.transform.position.x + i, enemyUnit.transform.position.y, enemyUnit.transform.position.z), Quaternion.identity);
+                    break;
+                case "firethorn":
+                    Instantiate(firethorn, new Vector3(enemyUnit.transform.position.x + i, enemyUnit.transform.position.y, enemyUnit.transform.position.z), Quaternion.identity);
+                    break;
+                case "mageflower":
+                    Instantiate(mageflower, new Vector3(enemyUnit.transform.position.x + i, enemyUnit.transform.position.y, enemyUnit.transform.position.z), Quaternion.identity);
+                    break;
+                case "sickleaf":
+                    Instantiate(sickleaf, new Vector3(enemyUnit.transform.position.x + i, enemyUnit.transform.position.y, enemyUnit.transform.position.z), Quaternion.identity);
+                    break;
+                default:
+                    if (enemyUnit.loot.Count == 0 || enemyUnit.loot == null)
+                    {
+                        Debug.Log("Loot table is missing");
+                        break;
+                    }
+                    int index = Random.Range(0, enemyUnit.loot.Count-1);
+                    Instantiate(enemyUnit.loot[index], new Vector3(enemyUnit.transform.position.x + i, enemyUnit.transform.position.y, enemyUnit.transform.position.z), Quaternion.identity);
+                    break;
+            }
+        }
+        
+    }
+
     void EndBattle()//win and loss states
     {
         if(state == BattleState.WON) 
         {
+            LootDrop("table", 2);
             state = BattleState.END;
             dialogueText.text = "You won the battle! Continue forward.";
             enemySpaceIndex++;
             
-            Debug.Log("space index "+enemySpaceIndex);
         }
         else if(state == BattleState.LOST)
         {
@@ -418,29 +484,31 @@ public class BattleSystem : MonoBehaviour
 
     public void OnAttackButton()//attack function clear checks
     {
-        Debug.Log("Attack button clicked");
-        if(playerUnit.gameIsActive == false) { dialogueText.text = "You are out of battle."; return; }//check if player is in battle
-        if(state != BattleState.PLAYERTURN) { return; }//check if player's turn
-        //future check if player is holding a weapon here
-        if (playerUnit.currentDurability <= 0) { dialogueText.text = "Broadsword is broken. Change weapon."; return; }//check if player has durability
+        if( agentWeapon.weapon == null) { errorAudio.Play(); dialogueText.text = "Your hand is empty."; return; }//check if player has a weapon equipped
+        if (enemyUnit == null) { errorAudio.Play(); dialogueText.text = "You are out of battle."; return; }//check if enemy is empty
+        if (playerUnit.gameIsActive == false) { errorAudio.Play(); dialogueText.text = "You are out of battle."; return; }//check if player is in battle
+        if(state != BattleState.PLAYERTURN) { errorAudio.Play(); return; }//check if player's turn
+        if (playerUnit.currentDurability <= 0) { errorAudio.Play(); dialogueText.text = agentWeapon.weapon.Name +" is broken. Change weapon."; return; }//check if player has durability
         bool hasEnergy = playerUnit.UseEnergy(playerUnit.energyDR);//check if player has enough energy
         
         if(hasEnergy == true)
         {
             playerUnit.animator.SetTrigger("Attack1");//play animation for attacking
             int weaponHIT = Random.Range(1, 100);
-            if(weaponHIT > playerUnit.weaponACC) 
+            if(weaponHIT > playerUnit.weaponACC)
             { //check if attack hits
+                missAudio.Play();
                 playerUnit.currentEnergy -= playerUnit.energyDR;
                 playerHUD.SetNRG(playerUnit.currentEnergy);
                 playerHUD.SetPlayerHUD(playerUnit);
-                dialogueText.text = "Knight uses Broadsword and misses."; 
+                dialogueText.text = "Knight uses "+ agentWeapon.weapon.Name +" and misses."; 
                 return; 
             }
             StartCoroutine(PlayerAttack());
         }
         else
         {
+            errorAudio.Play();
             dialogueText.text = "You are out of energy.";
             return;
         }
@@ -448,6 +516,7 @@ public class BattleSystem : MonoBehaviour
     }
     IEnumerator PlayerBrace()
     {
+        state = BattleState.ENEMYTURN;
         bool isDeadbyPoison = false;
         if (playerPoison > 0)//handle poison damage
         {
@@ -489,41 +558,65 @@ public class BattleSystem : MonoBehaviour
         retaliate = false;
         playerWeakend = false;
         enemyArmor = 0;
-        //plated = false;
+        plated = false;
 
         yield return new WaitForSeconds(1);
 
-        state = BattleState.ENEMYTURN;
+        
         StartCoroutine(EnemyTurn());
     }
 
     public void OnBraceButton()
     {
-        if (playerUnit.gameIsActive == false) { dialogueText.text = "You are out of battle."; return; }//check if player is in battle
-        Debug.Log("Brace button clicked");
-        if (playerUnit.gameIsActive == false) { dialogueText.text = "You are out of battle."; return; }
-        if (state != BattleState.PLAYERTURN) { return; }
-
+        if (enemyUnit == null) { errorAudio.Play(); dialogueText.text = "You are out of battle."; return; }//check if enemy is empty
+        if (playerUnit.gameIsActive == false) { errorAudio.Play(); dialogueText.text = "You are out of battle."; return; }//check if player is in battle
+        if (state != BattleState.PLAYERTURN) { errorAudio.Play(); return; }//check if player's turn
+        braceAudio.Play();
         StartCoroutine(PlayerBrace());
     }
 
     public void OnThrowButton()
     {
-        //temporary function
-        if (playerUnit.gameIsActive == false) { dialogueText.text = "You are out of battle."; return; }//check if player is in battle
+        if (enemyUnit == null) { errorAudio.Play(); dialogueText.text = "You are out of battle."; return; }//check if enemy is empty
+        if (playerUnit.gameIsActive == false) { errorAudio.Play(); dialogueText.text = "You are out of battle."; return; }//check if player is in battle
+        if (state != BattleState.PLAYERTURN) { errorAudio.Play(); return; }//check if player's turn
         //throw button logic will go here. for now it just sets durability to 0.
-        if (playerUnit.currentDurability > 0)
+        if(agentWeapon.weapon != null)
         {
-            enemyUnit.TakeDamage(15);
+            if (enemyArmor > 0)
+            {
+                enemyArmor = Mathf.Round(enemyArmor - 15);
+                itemThrowArmorAudio.Play();
+            }
+            else
+            {
+                isDead = enemyUnit.TakeDamage(15);//damage the enemy
+                itemThrowAudio.Play();
+            }
+
+            if (enemyArmor <= 0 && plated == true)
+            {
+                plated = false;
+                LootDrop("scrap", 2);
+            }
+            if (enemyArmor < 0)
+            {
+                enemyUnit.currentHP += enemyArmor;
+                enemyArmor = 0;
+                isDead = enemyUnit.TakeDamage(-enemyArmor);//damage the enemy
+            }
+            enemyArmorText.text = "Enemy Armor: " + enemyArmor.ToString();
+            
+            //isDead = enemyUnit.TakeDamage(15);
             enemyHUD.SetHP(enemyUnit.currentHP);
             playerUnit.currentDurability = 0;
             playerHUD.SetDurability(playerUnit.currentDurability);
-            dialogueText.text = "Knight throws Broadsword for 15 damage.";
+            dialogueText.text = "Knight throws " + agentWeapon.weapon.Name + " for 15 damage.";
+            agentWeapon.weapon = null;
             if (isDead)//check if enemy died
             {
                 if (state == BattleState.END)
                 {
-                    Debug.Log("stop");
                     return;
                 }
                 enemySprite.enabled = false;
@@ -535,8 +628,10 @@ public class BattleSystem : MonoBehaviour
         }
         else
         {
-            dialogueText.text = "Broadsword is brocken.";
+            errorAudio.Play();
+            dialogueText.text = "Your hand is empty.";
         }
         
     }
+    
 }
