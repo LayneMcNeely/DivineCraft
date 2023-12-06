@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/HowtoPlay.unity
     guid: 508064b56f402834e9418540eda5bbf3
   - enabled: 1
+    path: Assets/Scenes/Credits.unity
+    guid: dd02370adb67660489a2178fda8af1c2
+  - enabled: 1
     path: Assets/Scenes/StrongholdOverworld.unity
     guid: 8b27df67a1a4ee849a6ec92ebc9c0d0b
   - enabled: 1
@@ -20,6 +23,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/OutskirtsOverworld.unity
     guid: 7cddc98c633bf3b42af1b025f155f4a3
+  - enabled: 1
+    path: Assets/Scenes/VillageOverworld2.unity
+    guid: fedc123c9fa3161499740fedafdfed3b
   - enabled: 1
     path: Assets/Scenes/DarkwoodsOverworld.unity
     guid: 41dcb3cc5fd56d943af334ad89580b48

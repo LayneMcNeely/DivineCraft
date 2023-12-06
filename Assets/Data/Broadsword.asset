@@ -20,6 +20,7 @@ MonoBehaviour:
   <DefaultParametersList>k__BackingField:
   - itemParameter: {fileID: 11400000, guid: d7db9fc19b3a891459f5c6b61c95d7dc, type: 2}
     value: 60
+  <actionSFX>k__BackingField: {fileID: 8300000, guid: 49661b40aa2d62d40a34b480cec30c57, type: 3}
   <MinDamage>k__BackingField: 5
   <MaxDamage>k__BackingField: 15
   <Accuracy>k__BackingField: 75

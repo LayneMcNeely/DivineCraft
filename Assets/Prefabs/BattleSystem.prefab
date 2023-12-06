@@ -45,11 +45,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  playerPrefab: {fileID: 0}
-  enemyPrefab: {fileID: 8386629780395295319, guid: 1fb64c639a35b82448b484d31aa7fb9d, type: 3}
-  enemySpace: {fileID: 0}
+  playerPrefab: {fileID: 7923653078248876774, guid: dd1ef0feb74bdcd42b55106dd3478090, type: 3}
+  playerSprite: {fileID: 0}
+  enemySprite: {fileID: 0}
+  enemyIntent: {fileID: 0}
+  enemyPool: []
   enemySpaces: []
+  redIntent: {fileID: 21300000, guid: 98e9e7f64741d594c9a751ec3078c1e4, type: 3}
+  medRedIntent: {fileID: 21300000, guid: 25ba7a982c34f00458510fff9cf0d8e3, type: 3}
+  lgRedIntent: {fileID: 21300000, guid: 3f36e834726c9d044bf5b617bb7d73a8, type: 3}
+  greenIntent: {fileID: 21300000, guid: a220c724863937541a5407cee680147a, type: 3}
+  blueIntent: {fileID: 21300000, guid: ea329051afa329549bdf7792f883fc31, type: 3}
+  nothingIntent: {fileID: 21300000, guid: 5de8d1b65274c8d42908f8aef9f252b6, type: 3}
+  wood: {fileID: 2974613340785437260, guid: 9219be0df059c6648a166f2e1aacb9eb, type: 3}
+  stone: {fileID: 6381993655764688831, guid: 1b3c7d41f9664b34591087c678e42a17, type: 3}
+  scrap: {fileID: 3814368456949724973, guid: 98fedbbdb43f8274ba0eeef2256f3356, type: 3}
+  firethorn: {fileID: 6902971100304188804, guid: 966fc511b3a51c64ca998adb326390ce, type: 3}
+  mageflower: {fileID: 4815332916640329890, guid: c9f7d6b2d018f2c4db8840203486b2f7, type: 3}
+  sickleaf: {fileID: 8732016251278569317, guid: 286874d88da4b93459bd12d1131fce87, type: 3}
+  playerHitAudio: {fileID: 0}
+  enemyHitAudio: {fileID: 0}
+  pummelHitAudio: {fileID: 0}
+  armorHitAudio: {fileID: 0}
+  braceAudio: {fileID: 0}
+  itemThrowAudio: {fileID: 0}
+  itemThrowArmorAudio: {fileID: 0}
+  missAudio: {fileID: 0}
+  errorAudio: {fileID: 0}
   enemyNameText: {fileID: 0}
   dialogueText: {fileID: 0}
+  enemyArmorText: {fileID: 0}
   playerHUD: {fileID: 0}
   enemyHUD: {fileID: 0}

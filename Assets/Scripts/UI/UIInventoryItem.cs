@@ -22,6 +22,8 @@ namespace Inventory.UI
 
         private bool empty = true;
 
+        //private void OnEnable() => hideFlags = HideFlags.DontUnloadUnusedAsset;
+
         public void Awake()
         {
             ResetData();

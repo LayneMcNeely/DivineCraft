@@ -18,3 +18,4 @@ MonoBehaviour:
   <Description>k__BackingField: A basic material found everywhere.
   <ItemImage>k__BackingField: {fileID: -309680328, guid: 03a9b0f05dc52fe40bdd18ae3dacbeac, type: 3}
   <DefaultParametersList>k__BackingField: []
+  <actionSFX>k__BackingField: {fileID: 8300000, guid: f336164c2cd8d19458166432d334c512, type: 3}

@@ -18,6 +18,9 @@ public class BattleSystem : MonoBehaviour
     public SpriteRenderer enemyIntent;
     public List<GameObject> enemyPool = new List<GameObject>();
     public List<Transform> enemySpaces = new List<Transform>();
+    public GameObject werewolf;
+    public GameObject demon;
+    private GameObject enemyTransform;
 
     [Header("Intent Sprites")]
     public Sprite redIntent;
@@ -58,8 +61,10 @@ public class BattleSystem : MonoBehaviour
     private bool drained;
     private bool plated;
     private bool exposed;
+    private bool hexxed;
     private float playerPoison;
     private float enemyArmor;
+    private bool ghostTransform;
 
     private bool isDead;
 
@@ -82,7 +87,7 @@ public class BattleSystem : MonoBehaviour
         int enemyIndex = Random.Range(0, enemyPool.Count);//pick enemy from pool
         GameObject enemyGO = Instantiate(enemyPool[enemyIndex], enemySpaces[enemySpaceIndex]);//spawn enemy prefab
         enemySprite = enemyGO.GetComponent<SpriteRenderer>();
-        
+        enemyTransform = enemyGO;
         enemyUnit = enemyGO.GetComponent<Enemy>();
         enemyNameText.text = enemyUnit.enemyName + " HP";
         enemyHUD.SetEnemyHUD(enemyUnit);
@@ -108,6 +113,8 @@ public class BattleSystem : MonoBehaviour
         retaliate = false;
         drained = false;
         plated = false;
+        hexxed = false;
+        ghostTransform = false;
         playerPoison = 0;
         enemyArmor = 0;
 
@@ -127,6 +134,8 @@ public class BattleSystem : MonoBehaviour
     }
     IEnumerator PlayerAttack()//main player attack function that passes after checks have been cleared
     {
+        if(enemyUnit.enemyName == "Demonic Spirit")
+            ghostTransform = true;
         float playerATK = Random.Range(playerUnit.minDMG, playerUnit.maxDMG);//roll for base damage
 
         if (retaliate)
@@ -187,6 +196,19 @@ public class BattleSystem : MonoBehaviour
         dialogueText.text = "Knight uses "+ agentWeapon.weapon.Name +" for "+ playerATK +" damage.";
         playerUnit.animator.SetTrigger("Attack1");//play animation for attacking
         
+        if(enemyUnit.enemyName == "Wolf")
+        {
+            if(enemyUnit.currentHP < enemyUnit.maxHP / 2)
+            {
+                float reminder = enemyUnit.currentHP;
+                enemySprite.sprite = werewolf.GetComponent<SpriteRenderer>().sprite;
+                enemyTransform.transform.localScale = werewolf.transform.localScale;
+                enemyUnit = werewolf.GetComponent<Enemy>();
+                enemyNameText.text = enemyUnit.enemyName + " HP";
+                enemyUnit.currentHP = reminder;
+                enemyHUD.SetHP(enemyUnit.currentHP);
+            }
+        }
 
         yield return new WaitForSeconds(1);
         if (isDead)//check if enemy died
@@ -228,7 +250,8 @@ public class BattleSystem : MonoBehaviour
     {
         switch(action)
         {
-            case 1:
+            case 1://red intent (attack)
+            case 13:
                 if (exposed == true)
                 {
                     enemyIntent.sprite = medRedIntent;
@@ -239,17 +262,19 @@ public class BattleSystem : MonoBehaviour
                 }
                 break;
             case 2:
+            case 11:
                 enemyIntent.sprite = lgRedIntent;
                 break;
-            case 3:
+            case 3://blue intent (buff)
             case 4:
             case 5:
             case 6:
                 enemyIntent.sprite = blueIntent;
                 break;
-            case 7:
+            case 7://green intent (debuff)
             case 8:
             case 10:
+            case 12:
                 enemyIntent.sprite = greenIntent;
                 break;
             case 9:
@@ -294,6 +319,16 @@ public class BattleSystem : MonoBehaviour
     //Enemy Actions: 0 nothing, 1 basic attack, 2 pummel, 3 armor, 4 strength, 5 retaliation, 6 plated, 7 weaken, 8 drain, 9 expose, 10 poison, 11 life steal, 12 hex, 13 poison attack
     IEnumerator EnemyTurn()//enemy performs action here
     {
+        if(ghostTransform == true)
+        {
+            float reminder = enemyUnit.currentHP;
+            enemySprite.sprite = demon.GetComponent<SpriteRenderer>().sprite;
+            enemyTransform.transform.localScale = demon.transform.localScale;
+            enemyUnit = demon.GetComponent<Enemy>();
+            enemyNameText.text = enemyUnit.enemyName + " HP";
+            enemyUnit.currentHP = reminder;
+            enemyHUD.SetHP(enemyUnit.currentHP);
+        }
         switch (enemyAction)
         {
             case 1://basic attack
@@ -352,6 +387,34 @@ public class BattleSystem : MonoBehaviour
                 playerPoison += 5;
                 dialogueText.text = "Knight is poisoned";
                 break;
+            case 11://life steal
+                enemyATKcalc();
+                enemyHitAudio.Play();
+                enemyUnit.currentHP += enemyATK;
+                if(enemyUnit.currentHP > enemyUnit.maxHP)
+                    enemyUnit.currentHP = enemyUnit.maxHP;
+                enemyHUD.SetHP(enemyUnit.currentHP);
+                dialogueText.text = enemyUnit.enemyName + " uses Life Steal " + enemyUnit.mainATK + " for " + enemyATK + " damage.";
+                break;
+            case 12://hex
+                if (hexxed == true)
+                {
+                    enemyATKcalc();
+                    enemyHitAudio.Play();
+                    dialogueText.text = "Knight is Hexxed." + enemyUnit.enemyName + " uses " + enemyUnit.mainATK + " for " + enemyATK + " damage.";
+                }
+                else
+                {
+                    hexxed = true;
+                    dialogueText.text = "Knight is hexxed.";
+                }
+                break;
+            case 13://poison attack
+                playerPoison += 5;
+                enemyATKcalc();
+                enemyHitAudio.Play();
+                dialogueText.text = enemyUnit.enemyName + " uses Venom " + enemyUnit.mainATK + " for " + enemyATK + " damage.";
+                break;
             default://does nothing
                 dialogueText.text = enemyUnit.enemyName + " does nothing.";
                 break;
@@ -374,9 +437,40 @@ public class BattleSystem : MonoBehaviour
                 yield return new WaitForSeconds(0.33f);
                 playerUnit.animator.SetTrigger("Hurt");
                 break;
+            case 7://weaken applied animation
+                playerSprite.color = Color.yellow;
+                yield return new WaitForSeconds(0.5f);
+                playerSprite.color = Color.white;
+                playerUnit.animator.SetTrigger("SetIdle");
+                break;
+            case 8://drain applied animation
+                playerSprite.color = Color.gray;
+                yield return new WaitForSeconds(0.5f);
+                playerSprite.color = Color.white;
+                playerUnit.animator.SetTrigger("SetIdle");
+                break;
             case 10://poison applied animation
                 playerSprite.color = Color.green;
-                //playerUnit.animator.SetTrigger("Hurt");
+                yield return new WaitForSeconds(0.5f);
+                playerSprite.color = Color.white;
+                playerUnit.animator.SetTrigger("SetIdle");
+                break;
+            case 11://life steal animation
+                playerSprite.color = Color.red;
+                playerUnit.animator.SetTrigger("Hurt");
+                yield return new WaitForSeconds(0.5f);
+                playerSprite.color = Color.white;
+                playerUnit.animator.SetTrigger("SetIdle");
+                break;
+            case 12://hex animation
+                playerSprite.color = Color.magenta;
+                yield return new WaitForSeconds(0.5f);
+                playerSprite.color = Color.white;
+                playerUnit.animator.SetTrigger("SetIdle");
+                break;
+            case 13://poison attack animation
+                playerSprite.color = Color.green;
+                playerUnit.animator.SetTrigger("Hurt");
                 yield return new WaitForSeconds(0.5f);
                 playerSprite.color = Color.white;
                 playerUnit.animator.SetTrigger("SetIdle");
@@ -493,6 +587,12 @@ public class BattleSystem : MonoBehaviour
         
         if(hasEnergy == true)
         {
+            if(hexxed == true)
+            {
+                playerUnit.currentEnergy = 0;
+                playerHUD.SetNRG(playerUnit.currentEnergy);
+                hexxed = false;
+            }
             playerUnit.animator.SetTrigger("Attack1");//play animation for attacking
             int weaponHIT = Random.Range(1, 100);
             if(weaponHIT > playerUnit.weaponACC)
@@ -575,10 +675,10 @@ public class BattleSystem : MonoBehaviour
         StartCoroutine(PlayerBrace());
     }
 
-    public void OnThrowButton()
+    public void OnThrowButton()//throw from hand
     {
-        if (enemyUnit == null) { errorAudio.Play(); dialogueText.text = "You are out of battle."; return; }//check if enemy is empty
         if (playerUnit.gameIsActive == false) { errorAudio.Play(); dialogueText.text = "You are out of battle."; return; }//check if player is in battle
+        if (enemyUnit == null) { errorAudio.Play(); dialogueText.text = "You are out of battle."; return; }//check if enemy is empty
         if (state != BattleState.PLAYERTURN) { errorAudio.Play(); return; }//check if player's turn
         //throw button logic will go here. for now it just sets durability to 0.
         if(agentWeapon.weapon != null)
@@ -607,7 +707,6 @@ public class BattleSystem : MonoBehaviour
             }
             enemyArmorText.text = "Enemy Armor: " + enemyArmor.ToString();
             
-            //isDead = enemyUnit.TakeDamage(15);
             enemyHUD.SetHP(enemyUnit.currentHP);
             playerUnit.currentDurability = 0;
             playerHUD.SetDurability(playerUnit.currentDurability);
@@ -631,7 +730,52 @@ public class BattleSystem : MonoBehaviour
             errorAudio.Play();
             dialogueText.text = "Your hand is empty.";
         }
+    }
+
+    public void ThrowFromBag()
+    {
+        if (enemyUnit == null) { errorAudio.Play(); dialogueText.text = "You are out of battle."; return; }//check if enemy is empty
+        if (playerUnit.gameIsActive == false) { errorAudio.Play(); dialogueText.text = "You are out of battle."; return; }//check if player is in battle
+        if (state != BattleState.PLAYERTURN) { errorAudio.Play(); return; }//check if player's turn
+        //throw button logic will go here. for now it just sets durability to 0.
+        if (enemyArmor > 0)
+        {
+            enemyArmor = Mathf.Round(enemyArmor - 15);
+            itemThrowArmorAudio.Play();
+        }
+        else
+        {
+            isDead = enemyUnit.TakeDamage(15);//damage the enemy
+            itemThrowAudio.Play();
+        }
+
+        if (enemyArmor <= 0 && plated == true)
+        {
+            plated = false;
+            LootDrop("scrap", 2);
+        }
+        if (enemyArmor < 0)
+        {
+            enemyUnit.currentHP += enemyArmor;
+            enemyArmor = 0;
+            isDead = enemyUnit.TakeDamage(-enemyArmor);//damage the enemy
+        }
+        enemyArmorText.text = "Enemy Armor: " + enemyArmor.ToString();
+
+        enemyHUD.SetHP(enemyUnit.currentHP);
+        dialogueText.text = "Knight throws an item for 15 damage.";
+        if (isDead)//check if enemy died
+        {
+            if (state == BattleState.END)
+            {
+                return;
+            }
+            enemySprite.enabled = false;
+            enemyIntent.enabled = false;
+            playerUnit.gameIsActive = false;//disables combat buttons and enables movement
+            state = BattleState.WON;
+            EndBattle();
+        }
         
     }
-    
 }

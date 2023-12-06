@@ -17,6 +17,8 @@ namespace Inventory.Model
 
         public event Action<Dictionary<int, InventoryItem>> OnInventoryUpdated;
 
+        //private void OnEnable() => hideFlags = HideFlags.DontUnloadUnusedAsset;
+
         public void Initialize()
         {
             inventoryItems = new List<InventoryItem>();

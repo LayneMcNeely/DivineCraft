@@ -1,3 +1,4 @@
+using Inventory;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class ButtonsFunctions : MonoBehaviour
 {
+    [SerializeField]
+    private InventoryController inventoryData;
     public void Play(string levelName)
     {
         SceneManager.LoadScene(levelName);

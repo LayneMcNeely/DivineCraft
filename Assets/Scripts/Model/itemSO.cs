@@ -27,6 +27,8 @@ namespace Inventory.Model
 
         [field: SerializeField]
         public List<ItemParameter> DefaultParametersList { get; set; }
+
+        //private void OnEnable() => hideFlags = HideFlags.DontUnloadUnusedAsset;
     }
 
     [Serializable]

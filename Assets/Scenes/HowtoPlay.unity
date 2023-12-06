@@ -292,8 +292,8 @@ MonoBehaviour:
     Any remaining energy you have will be converted to block that will reduce incoming
     attack damage. Throw is for when you are in a pinch and need to do guaranteed
     damage at no cost, but the item will be destroyed. When your weapon breaks, you''ll
-    need to change it out. To view your inventory, click Bag and the item you want
-    to use. You can also throw items directly from the bag.'
+    need to change it out. To view your inventory, click Bag and right-click the
+    item you want to use. You can also throw items directly from the bag.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -406,7 +406,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.25490198, g: 0.4117647, b: 0.88235295, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -491,6 +491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a529f340fda7984aa8fb8f30f939a34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inventoryData: {fileID: 0}
 --- !u!4 &534347324
 Transform:
   m_ObjectHideFlags: 0

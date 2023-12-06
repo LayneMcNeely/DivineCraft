@@ -42,7 +42,11 @@ public class Player : MonoBehaviour
         animator = GetComponent<Animator>();
 
         currentHP = PlayerPrefs.GetFloat("playerHealth");
-        playerHUD.SetPlayerHUD(this);
+        if(playerHUD != null)
+        {
+            playerHUD.SetPlayerHUD(this);
+        }
+        
     }
 
     // Update is called once per frame

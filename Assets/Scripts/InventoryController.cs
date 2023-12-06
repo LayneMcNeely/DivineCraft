@@ -17,13 +17,23 @@ namespace Inventory
 
         public List<InventoryItem> initialItems = new List<InventoryItem>();
 
+        [SerializeField]
+        private AudioClip throwClip;
+
+        [SerializeField]
+        private AudioSource audioSource;
+
+        public BattleSystem battleSystem;
+
+        //private void OnEnable() => hideFlags = HideFlags.DontUnloadUnusedAsset;
+
         private void Start()
         {
             PrepareUI();
             PrepareInventoryData();
         }
 
-        private void PrepareInventoryData()
+        public void PrepareInventoryData()
         {
             inventoryData.Initialize();
             inventoryData.OnInventoryUpdated += UpdateInventoryUI;
@@ -44,7 +54,7 @@ namespace Inventory
             }
         }
 
-        private void PrepareUI()
+        public void PrepareUI()
         {
             inventoryUI.InitializeInventoryUI(inventoryData.Size);
             inventoryUI.OnDescriptionRequested += HandleDescriptionRequest;
@@ -58,17 +68,46 @@ namespace Inventory
             InventoryItem inventoryItem = inventoryData.GetItemAt(itemIndex);
             if (inventoryItem.IsEmpty)
                 return;
+            
+            IItemAction itemAction = inventoryItem.item as IItemAction;
+            if(itemAction != null)
+            {
+                inventoryUI.ShowItemAction(itemIndex);
+                inventoryUI.AddAction(itemAction.ActionName, () => PerformAction(itemIndex));
+            }
+            IDestroyableItem destroyableItem = inventoryItem.item as IDestroyableItem;
+            if (destroyableItem != null)
+            {
+                inventoryUI.AddAction("Throw", () => ThrowItem(itemIndex, inventoryItem.quantity));
+            }
+        }
+
+        private void ThrowItem(int itemIndex, int quantity)
+        {
+            battleSystem.ThrowFromBag();
+            inventoryData.RemoveItem(itemIndex, quantity);
+            inventoryUI.ResetSelection();
+            //audioSource.PlayOneShot(throwClip);
+        }
+
+        public void PerformAction(int itemIndex)
+        {
+            InventoryItem inventoryItem = inventoryData.GetItemAt(itemIndex);
+            if (inventoryItem.IsEmpty)
+                return;
             IDestroyableItem destroyableItem = inventoryItem.item as IDestroyableItem;
             if (destroyableItem != null)
             {
                 inventoryData.RemoveItem(itemIndex, 1);
             }
             IItemAction itemAction = inventoryItem.item as IItemAction;
-            if(itemAction != null)
+            if (itemAction != null)
             {
                 itemAction.PerformAction(gameObject, inventoryItem.itemState);
+                audioSource.PlayOneShot(itemAction.actionSFX);
+                if(inventoryData.GetItemAt(itemIndex).IsEmpty)
+                    inventoryUI.ResetSelection();
             }
-            
         }
 
         private void HandleDragging(int itemIndex)

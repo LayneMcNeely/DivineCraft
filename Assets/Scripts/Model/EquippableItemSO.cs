@@ -9,6 +9,7 @@ namespace Inventory.Model
     {
         public string ActionName => "Equip";
 
+        [field: SerializeField]
         public AudioClip actionSFX { get; private set; }
 
         [field: SerializeField]
